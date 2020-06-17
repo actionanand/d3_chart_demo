@@ -5,3 +5,5 @@ const dummy_data = [
     { id: 'd4', value: 7, name: 'Germany'},
     { id: 'd5', value: 3, name: 'Sri Lanka'}
 ];
+
+console.log(d3);
