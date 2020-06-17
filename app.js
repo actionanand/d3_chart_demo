@@ -6,6 +6,8 @@ const dummy_data = [
     { id: 'd5', value: 3, name: 'Sri Lanka'}
 ];
 
+let selectedData = dummy_data;
+
 const MARGIN = {
     top: 20,
     bottom: 10
@@ -30,8 +32,9 @@ chart.append('g')
     .attr('transform', `translate(0, ${CHART_HEIGHT})`)
     .attr('color', 'forestgreen');
 
-chart.selectAll('.bar')
-    .data(dummy_data)
+function renderChart() {
+    chart.selectAll('.bar')
+    .data(selectedData, data => data.id)
     .enter()
     .append('rect')
     .classed('bar', true)
@@ -40,8 +43,10 @@ chart.selectAll('.bar')
     .attr('x', (data) => x(data.name))
     .attr('y', (data) => y(data.value));
 
+chart.selectAll('.bar').data(selectedData, data => data.id).exit().remove();
+
 chart.selectAll('.label')
-    .data(dummy_data)
+    .data(selectedData, data => data.id)
     .enter()
     .append('text')
     .text((data) => data.value)
@@ -49,3 +54,32 @@ chart.selectAll('.label')
     .attr('y', data => y(data.value) - 10)
     .attr('text-anchor', 'middle')
     .classed('label', true);
+
+chart.selectAll('.label').data(selectedData, data => data.id).exit().remove();
+}
+
+renderChart();
+
+const listItems = d3.select('#data')
+    .select('ul')
+    .selectAll('li')
+    .data(dummy_data)
+    .enter()
+    .append('li');
+
+let unselectedIDs = [];
+
+listItems.append('span').text(data => data.name);
+
+listItems.append('input')
+    .attr('type', 'checkbox')
+    .attr('checked', true)
+    .on('change', (data) => {
+        if(unselectedIDs.indexOf(data.id) === -1) {
+            unselectedIDs.push(data.id);
+        } else {
+            unselectedIDs = unselectedIDs.filter((id) => id!==data.id);
+        }
+    selectedData = dummy_data.filter((d) => unselectedIDs.indexOf(d.id) === -1);
+    renderChart();
+    });
